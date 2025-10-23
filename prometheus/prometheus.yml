@@ -1,0 +1,12 @@
+
+global:
+  scrape_interval: 2s
+
+scrape_configs:
+  - job_name: 'app'
+    static_configs:
+      - targets: ['app:8080']
+
+  - job_name: 'ebpf-observer'
+    static_configs:
+      - targets: ['observer:9100']

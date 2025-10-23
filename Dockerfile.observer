@@ -1,0 +1,15 @@
+
+FROM golang:1.22-bullseye
+
+RUN apt-get update && apt-get install -y --no-install-recommends     clang llvm bpftool make gcc libc6-dev git ca-certificates docker.io     && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /src
+COPY go.mod ./
+RUN go mod download
+
+COPY observer ./observer
+COPY observer/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+EXPOSE 9100
+ENTRYPOINT ["/entrypoint.sh"]

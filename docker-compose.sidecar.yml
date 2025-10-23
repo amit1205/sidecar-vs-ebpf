@@ -1,0 +1,33 @@
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    image: sidecar-vs-ebpf/app:latest
+    container_name: app
+    ports: ["8080:8080"]
+    volumes:
+      - app-logs:/var/log/app
+
+  sidecar:
+    build:
+      context: .
+      dockerfile: Dockerfile.sidecar
+    image: sidecar-vs-ebpf/sidecar:latest
+    container_name: sidecar
+    depends_on: [app]
+    volumes:
+      - app-logs:/var/log/app:ro
+
+  bench:
+    build:
+      context: .
+      dockerfile: Dockerfile.bench
+    image: sidecar-vs-ebpf/bench:latest
+    container_name: bench
+    depends_on: [app]
+    entrypoint: ["/usr/local/bin/bench"]
+
+volumes:
+  app-logs:

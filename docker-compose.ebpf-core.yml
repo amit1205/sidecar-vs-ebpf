@@ -1,0 +1,35 @@
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    image: sidecar-vs-ebpf/app:latest
+    container_name: app
+    ports: ["8080:8080"]
+
+  observer:
+    build:
+      context: .
+      dockerfile: Dockerfile.observer
+    image: sidecar-vs-ebpf/observer:latest
+    container_name: observer
+    privileged: true
+    depends_on: [app]
+    environment:
+      - APP_PID=
+    volumes:
+      - /sys/kernel/btf:/sys/kernel/btf:ro
+      - /sys/fs/bpf:/sys/fs/bpf
+      - /sys/kernel/debug:/sys/kernel/debug
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports: ["9100:9100"]
+
+  bench:
+    build:
+      context: .
+      dockerfile: Dockerfile.bench
+    image: sidecar-vs-ebpf/bench:latest
+    container_name: bench
+    depends_on: [app]
+    entrypoint: ["/usr/local/bin/bench"]

@@ -1,0 +1,36 @@
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    image: sidecar-vs-ebpf/app:latest
+    container_name: app
+    ports: ["8080:8080"]
+
+  bpftrace:
+    image: iovisor/bpftrace:latest
+    container_name: bpftrace
+    privileged: true
+    pid: "host"
+    network_mode: host
+    volumes:
+      - ./ebpf:/ebpf:ro
+      - /sys/kernel/debug:/sys/kernel/debug
+      - /sys/fs/bpf:/sys/fs/bpf
+      - /lib/modules:/lib/modules:ro
+      - /usr/src:/usr/src:ro
+    entrypoint: ["/bin/sh","-c"]
+    command: >
+      'set -eu;
+       echo "Attach to app's write syscalls...";
+       bpftrace /ebpf/http_bytes.bt'
+
+  bench:
+    build:
+      context: .
+      dockerfile: Dockerfile.bench
+    image: sidecar-vs-ebpf/bench:latest
+    container_name: bench
+    depends_on: [app]
+    entrypoint: ["/usr/local/bin/bench"]

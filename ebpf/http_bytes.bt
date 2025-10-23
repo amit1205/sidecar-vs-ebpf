@@ -1,0 +1,5 @@
+
+#!/usr/bin/env bpftrace
+BEGIN { printf("Tracing write() bytes...\n"); }
+tracepoint:syscalls:sys_enter_write { @bytes = sum(args->count); }
+interval:s:1 { printf("bytes_written_total=%d\n", @bytes); }
