@@ -1,5 +1,4 @@
-
-# Sidecar vs eBPF: Containerized Benchmark (Go)
+# Sidecar vs eBPF: Containerized Benchmark (Go Implementation)
 
 This repo demonstrates a simple Go HTTP service and three observability approaches:
 
