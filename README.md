@@ -25,7 +25,7 @@ make build
 docker compose -f docker-compose.sidecar.yml up --remove-orphans --build
 ```
 
-# In another terminal:
+In another terminal:
 
 ```bash
 docker compose -f docker-compose.sidecar.yml run --rm bench   -url http://app:8080/ping -conns 50 -dur 20s
